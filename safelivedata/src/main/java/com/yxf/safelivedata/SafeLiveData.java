@@ -22,7 +22,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
 
     static Handler handler;
 
-    private static boolean isInMainThread() {
+    static boolean isInMainThread() {
         return Looper.getMainLooper() == Looper.myLooper();
     }
 
