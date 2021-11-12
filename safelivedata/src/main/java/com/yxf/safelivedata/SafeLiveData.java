@@ -20,10 +20,14 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
 
     private final MutableLiveData<T> realLiveData;
 
-    private static Handler handler;
+    static Handler handler;
 
-    private static void runInMainThread(Runnable runnable) {
-        boolean inMainThread = Looper.getMainLooper() == Looper.myLooper();
+    static boolean isInMainThread() {
+        return Looper.getMainLooper() == Looper.myLooper();
+    }
+
+    static void runInMainThread(Runnable runnable) {
+        boolean inMainThread = isInMainThread();
         if (inMainThread) {
             runnable.run();
         } else {
