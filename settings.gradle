@@ -1,0 +1,3 @@
+rootProject.name = "SafeLiveData"
+include ':app'
+include ':safelivedata'
