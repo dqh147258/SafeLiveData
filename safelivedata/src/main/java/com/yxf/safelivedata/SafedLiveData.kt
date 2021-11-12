@@ -45,7 +45,6 @@ open class SafedLiveData<T>(
     }
 
     protected fun finalize() {
-        Log.d("Debug", "finalize called")
         runInMainThread {
             observerReferenceList.forEach {
                 val value = it.get() ?: return@forEach
