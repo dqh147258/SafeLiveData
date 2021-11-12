@@ -1,8 +1,6 @@
 package com.yxf.safelivedata
 
 import androidx.lifecycle.MutableLiveData
-import java.util.concurrent.locks.Condition
-import java.util.concurrent.locks.ReentrantLock
 
 
 fun <T> MutableLiveData<T>.setValueSync(value: T) {
@@ -11,7 +9,7 @@ fun <T> MutableLiveData<T>.setValueSync(value: T) {
     } else {
         synchronized(this) {
             val condition = Object()
-            SafeLiveData.handler.post {
+            SafeLiveData.getHandler().post {
                 try {
                     this.value = value
                 } finally {
