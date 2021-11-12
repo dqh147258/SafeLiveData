@@ -88,7 +88,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
             for (int i = 0; i < size; i++) {
                 Observer<? super T> observer = observerReferenceList.get(i).get();
                 if (observer != null) {
-                    removeObserver(observer);
+                    realLiveData.removeObserver(observer);
                 }
             }
         });
