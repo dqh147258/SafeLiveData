@@ -22,8 +22,15 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
 
     static Handler handler;
 
-    static boolean isInMainThread() {
+    private static boolean isInMainThread() {
         return Looper.getMainLooper() == Looper.myLooper();
+    }
+
+    static Handler getHandler() {
+        if (handler == null) {
+            handler = new Handler(Looper.getMainLooper());
+        }
+        return handler;
     }
 
     static void runInMainThread(Runnable runnable) {
@@ -31,10 +38,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
         if (inMainThread) {
             runnable.run();
         } else {
-            if (handler == null) {
-                handler = new Handler(Looper.getMainLooper());
-            }
-            handler.post(runnable);
+            getHandler().post(runnable);
         }
     }
 
