@@ -1,10 +1,12 @@
 package com.yxf.livedatatest
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import com.yxf.livedatatest.databinding.ActivityMainBinding
 import com.yxf.safelivedata.SafeLiveData
+import com.yxf.safelivedata.setValueSync
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,7 +15,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(vb.root)
-
         vb.run {
             normal.setOnClickListener {
                 generateTask(MutableLiveData())

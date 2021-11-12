@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
@@ -22,23 +23,50 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
 
     static Handler handler;
 
-    static boolean isInMainThread() {
+    private static boolean isInMainThread() {
         return Looper.getMainLooper() == Looper.myLooper();
     }
 
-    static Handler getHandler() {
+    private static Handler getHandler() {
         if (handler == null) {
             handler = new Handler(Looper.getMainLooper());
         }
         return handler;
     }
 
-    static void runInMainThread(Runnable runnable) {
+    private static void runInMainThread(Runnable runnable) {
         boolean inMainThread = isInMainThread();
         if (inMainThread) {
             runnable.run();
         } else {
             getHandler().post(runnable);
+        }
+    }
+
+    public static <T> void setValueSync(MutableLiveData<T> liveData, T value) {
+        if (liveData == null) {
+            return;
+        }
+        if (isInMainThread()) {
+            liveData.setValue(value);
+            return;
+        }
+        Runnable runnable = () -> {
+            synchronized (liveData) {
+                try {
+                    liveData.setValue(value);
+                } finally {
+                    liveData.notify();
+                }
+            }
+        };
+        synchronized (liveData) {
+            getHandler().post(runnable);
+            try {
+                liveData.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -55,6 +83,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
     }
 
 
+    @MainThread
     private void removeObserverReference(Observer<? super T> observer) {
         int size = observerReferenceList.size();
         for (int i = size - 1; i >= 0; i--) {
@@ -65,6 +94,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
         }
     }
 
+    @MainThread
     private boolean isObserverExist(@NonNull Observer<? super T> observer) {
         int size = observerReferenceList.size();
         for (int i = 0; i < size; i++) {
@@ -76,6 +106,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
         return false;
     }
 
+    @MainThread
     private void recordObserver(@NonNull Observer<? super T> observer) {
         removeObserverReference(null);
         if (!isObserverExist(observer)) {
@@ -134,7 +165,7 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
 
     @Override
     public void setValue(T value) {
-        realLiveData.setValue(value);
+        setValueSync(realLiveData, value);
     }
 
     @Nullable
