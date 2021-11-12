@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import com.yxf.livedatatest.databinding.ActivityMainBinding
-import com.yxf.safelivedata.SafedLiveData
+import com.yxf.safelivedata.SafeLiveData
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
                 generateTask(MutableLiveData())
             }
             safe.setOnClickListener {
-                generateTask(SafedLiveData())
+                generateTask(SafeLiveData())
             }
         }
     }
