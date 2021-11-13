@@ -19,9 +19,7 @@ import java.util.List;
 
 public class SafeLiveData<T> extends MutableLiveData<T> {
 
-    private final MutableLiveData<T> realLiveData;
-
-    static Handler handler;
+    private static volatile Handler handler;
 
     private static boolean isInMainThread() {
         return Looper.getMainLooper() == Looper.myLooper();
@@ -29,7 +27,11 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
 
     private static Handler getHandler() {
         if (handler == null) {
-            handler = new Handler(Looper.getMainLooper());
+            synchronized (SafeLiveData.class) {
+                if (handler == null) {
+                    handler = new Handler(Looper.getMainLooper());
+                }
+            }
         }
         return handler;
     }
@@ -70,7 +72,9 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
         }
     }
 
-    private List<WeakReference<Observer<? super T>>> observerReferenceList = new ArrayList();
+    private final MutableLiveData<T> realLiveData;
+
+    private final List<WeakReference<Observer<? super T>>> observerReferenceList = new ArrayList();
 
     public SafeLiveData(MutableLiveData<T> liveData) {
         super();
@@ -172,7 +176,12 @@ public class SafeLiveData<T> extends MutableLiveData<T> {
     @org.jetbrains.annotations.Nullable
     @Override
     public T getValue() {
-        return realLiveData.getValue();
+        if (isInMainThread()) {
+            return realLiveData.getValue();
+        }
+        synchronized (realLiveData) {
+            return realLiveData.getValue();
+        }
     }
 
     @Override
