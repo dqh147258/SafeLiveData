@@ -22,13 +22,13 @@ dependencies
 ```groovy
 	dependencies {
             def lastSafeLiveDataVersion = "1.1.1" //replace lastSafeLiveDataVersion
-	        implementation "com.github.dqh147258:SafeLiveData:$lastSafeLiveDataVersion"
+            implementation "com.github.dqh147258:SafeLiveData:$lastSafeLiveDataVersion"
 	}
 ```
 
 use it by 
 ```kotlin
-val infoLiveData = SafeLiveData<Int>()
+    val infoLiveData = SafeLiveData<Int>()
 ```
 
 or 
